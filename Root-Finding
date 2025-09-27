@@ -1,0 +1,22 @@
+import time
+RR1 = RealField(10000)
+
+def w(k,x0, ff):
+    ff = [RR1(diff(f,x,i).subs(x=x0)) for i in range(k+2)]
+    Alist = [RR1(1), ff[1], ff[1]^2-RR1(0.5)*ff[2]*ff[0]]
+    for s in range(2,k):
+        Bs = sum([(1/factorial(q))*(-ff[0])^(q-2)*ff[q]*Alist[s+1-q] for q in range(2,s+2)])
+        Asp1 = ff[1]*Alist[s]-ff[0]*Bs
+        Alist.append(Asp1)
+    return -RR1(ff[0])*Alist[k-1]/Alist[k]
+
+start = time.time()
+f = log(x)-1
+xold = RR1(1.5)
+for i in range(3):
+    xnew = xold + w(100,xold,f)
+    xold = xnew
+    print((RR1(xnew)-RR1(e)).n(20))
+    #print(f.subs(x=RR1(xnew)).n(20))
+end = time.time()
+print(f"{end - start} seconds")
